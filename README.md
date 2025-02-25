@@ -107,3 +107,5 @@ result = socket.recv_string()
 # convert the JSON-encoded string (result) into a python dictionary
 data = json.loads(result)
 ```
+# UML Sequence Diagram
+![UML Diagram for Jamies Microservice A - Spell Sorting] (https://github.com/mitch311111/CS361-Microservice_A/blob/main/UMLDiagram.png)
