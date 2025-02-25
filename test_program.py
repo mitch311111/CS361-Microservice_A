@@ -1,8 +1,6 @@
 import zmq
 import json
 
-
-
 # Print all spell data
 def print_data(spell_data):
     for spell in spell_data: 
@@ -120,7 +118,7 @@ def main():
             except json.JSONDecodeError:
                 print("Error: could not decode server response")
 
-        if choice == 3:
+        elif choice == 3:
             message = json.dumps({
                 "sort_by": "class",
                 "descending": None,
@@ -145,8 +143,16 @@ def main():
             except json.JSONDecodeError:
                 print("Error: could not decode server response")
 
-        if choice == 4:
+        elif choice == 4:
+            message = json.dumps({"end_program": True})
+            print("Sending signal to microservice to end program")
+            socket.send_string(message)
+            print(f"{socket.recv_string()}") 
+            print("Bye!")
             break
+
+        else:
+            print("Invalid Input. Try again.")
     
 
 main()
