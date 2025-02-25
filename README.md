@@ -29,8 +29,8 @@ The request is sent as a JSON-encoded string. Each request must contain the foll
 ```
 {
     "sort_by": "name",
-    "descending": null,
-    "class_name": null
+    "descending": None,
+    "class_name": None
 }
 ```
 **Sort by level (Ascending):**
@@ -38,7 +38,7 @@ The request is sent as a JSON-encoded string. Each request must contain the foll
 {
     "sort_by": "level",
     "descending": false,
-    "class_name": null
+    "class_name": None
 }
 ```
 **Sort by level (Descending):**
@@ -46,14 +46,14 @@ The request is sent as a JSON-encoded string. Each request must contain the foll
 {
     "sort_by": "level",
     "descending": true,
-    "class_name": null
+    "class_name": None
 }
 ```
 **Sort by class (For Example, "Wizard"):**
 ```
 {
     "sort_by": "class",
-    "descending": null,
+    "descending": None,
     "class_name": "Wizard"
 }
 ```
@@ -61,7 +61,7 @@ The request is sent as a JSON-encoded string. Each request must contain the foll
 ### Example Call
 To send a request, you will need to communicate with the microservice using a ZeroMQ socket on ```localhost:5555```. The client should send a message in the JSON format to the microservice.
 
-Heres a snippet for sending a request:
+Here's an example snippet for sending a request:
 ```
 import zmq
 import json
@@ -81,7 +81,7 @@ message = json.dumps({
 # send the message
 socket.send_string(message)
 ```
-if you wish to terminate the microservice, you can send a request with the following JSON format:
+If you wish to terminate the microservice, you can send a request with the following JSON format:
 ```
 {
 "end_program: true
@@ -104,7 +104,7 @@ The microservice processes the request and returns the sorted list of spell data
 socket.send_string(message)
 result = socket.recv_string()
 
-# convert the JSON-encoded string (result) into a python dictionary
+# convert the JSON-encoded string (result) into a Python dictionary
 data = json.loads(result)
 ```
 # UML Sequence Diagram
