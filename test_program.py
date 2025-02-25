@@ -71,8 +71,8 @@ def main():
     # Bind socket to local host
     socket.connect("tcp://localhost:5555")
 
-    choice = -1
-    print_method = -1
+    choice = -1 # store users choice
+    print_method = -1 # store print method
 
     while True:
         choice = get_input()
@@ -83,16 +83,19 @@ def main():
                 "class_name": None
             })
             print(f"\nSending message: {message}\n")
-            socket.send_string(message)
-            result = socket.recv_string()
-            print_method = get_print_method()
+            socket.send_string(message) # Send request to microservice
+            result = socket.recv_string() # Recieve response from microservice
+            print_method = get_print_method() # Ask user for printing method 
 
             try:
-                spell_data = json.loads(result)
+                spell_data = json.loads(result) # Parse Json response
+                
+                # Print based on user input
                 if print_method == 1:
                     print_data(spell_data)
                 else:
                     print_name(spell_data)
+
             except json.JSONDecodeError:
                 print("Error: could not decode server response")
 
@@ -105,16 +108,18 @@ def main():
                 "class_name": None
             })
             print(f"\nSending message: {message}\n")
-            socket.send_string(message)
-            result = socket.recv_string()
-            print_method = get_print_method()
+            socket.send_string(message) # Send request to microservice
+            result = socket.recv_string() # Recieve response from microservice
+            print_method = get_print_method() # Ask user for printing method 
 
             try:
-                spell_data = json.loads(result)
+                spell_data = json.loads(result) 
+
                 if print_method == 1:
                     print_data(spell_data)
                 else:
                     print_name(spell_data)
+
             except json.JSONDecodeError:
                 print("Error: could not decode server response")
 
@@ -131,6 +136,8 @@ def main():
 
             try:
                 spell_data = json.loads(result)
+
+                # if no spells were returned, class name was invalid
                 if spell_data == []:
                     print("Class not found.")
                     continue
@@ -144,9 +151,14 @@ def main():
                 print("Error: could not decode server response")
 
         elif choice == 4:
+            # Create termination message
             message = json.dumps({"end_program": True})
             print("Sending signal to microservice to end program")
+
+            # Send message to microservice
             socket.send_string(message)
+
+            # Recieve message and print confirmation from the microservice
             print(f"{socket.recv_string()}") 
             print("Bye!")
             break
