@@ -48,6 +48,7 @@ def sort_by_class(spell_data, class_name=None):
             for spell_class in spell["classes"]:
                 if class_name.lower() == spell_class["name"].lower():
                     class_sorted.append(spell)
+    class_sorted = sort_by_name(class_sorted)
     return class_sorted
 
 

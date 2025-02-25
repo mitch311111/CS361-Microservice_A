@@ -1,11 +1,16 @@
 import zmq
 import json
 
+
+
+# Print all spell data
 def print_data(spell_data):
     for spell in spell_data: 
         print(json.dumps(spell, indent=4))
 
+# Print only name, level, classes
 def print_name(spell_data):
+    print()
     for spell in spell_data:
         name = spell["name"]
         level = spell["level"]
@@ -15,22 +20,25 @@ def print_name(spell_data):
             
         print(f"{name}: Level {level}, ({class_list})")
 
+# Get input for sorting method
 def get_input():
-    print("1. Sort by name (Alphabetically)\n")
-    print("2. Sort by level (Ascending or Descending)\n")
-    print("3. Sort by Class (Alphabetically)\n")
-    print("4. quit")
+    print("\nHow would you like the spells to be sorted?")
+    print("1. Sort by Name (Alphabetically)")
+    print("2. Sort by level (Ascending or Descending)")
+    print("3. Sort by Class (Alphabetically)")
+    print("4. Quit")
     try:
-        choice = int(input("Your choice: "))  
+        choice = int(input("Your choice (1 - 4): "))  
         return choice
     except:
         print("Invalid input, try again")
         return -1
 
+# Get input for printing method
 def get_print_method():
     print("How would you like to view the spells?")
-    print("1. See all spell data.")
-    print("2. Name only")
+    print("1. See all spell data (Json Object).")
+    print("2. Name, Level, and Class only")
     try:
         choice = int(input("Your choice: "))  
         return choice
@@ -38,6 +46,7 @@ def get_print_method():
         print("Invalid input, try again")
         return -1
 
+# Get input for either ascending or descending level sorting
 def level_order():
     try:
         choice = int(input("Ascending or Descending? (1 or 2): "))
@@ -50,21 +59,22 @@ def level_order():
         print("Invalid input, try again")
         return -1
     
-
+# Get desired class name, input is not case sensitive
 def get_class_name():
     class_name = input("Enter a class name: ").strip()
     return class_name
 
+# main function
 def main():
+    # Create ZMQ context and socket
     context = zmq.Context() 
-
     socket = context.socket(zmq.REQ)
+
+    # Bind socket to local host
     socket.connect("tcp://localhost:5555")
 
     choice = -1
     print_method = -1
-
-    # spell_data = load_spells()
 
     while True:
         choice = get_input()
@@ -74,7 +84,7 @@ def main():
                 "descending": None,
                 "class_name": None
             })
-            print(f"Sending message: {message}")
+            print(f"\nSending message: {message}\n")
             socket.send_string(message)
             result = socket.recv_string()
             print_method = get_print_method()
@@ -96,7 +106,7 @@ def main():
                 "descending": order,
                 "class_name": None
             })
-            print(f"Sending message: {message}")
+            print(f"\nSending message: {message}\n")
             socket.send_string(message)
             result = socket.recv_string()
             print_method = get_print_method()
@@ -117,13 +127,17 @@ def main():
                 "class_name": get_class_name()
             })
 
-            print(f"Sending message: {message}")
+            print(f"\nSending message: {message}\n")
             socket.send_string(message)
             result = socket.recv_string()
-            print_method = get_print_method()
 
             try:
                 spell_data = json.loads(result)
+                if spell_data == []:
+                    print("Class not found.")
+                    continue
+                
+                print_method = get_print_method()
                 if print_method == 1:
                     print_data(spell_data)
                 else:
