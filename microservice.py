@@ -9,6 +9,8 @@ message = {
                 "sort_by": (The method of sorting. can either be name, level, or class)
                 "descending": (Boolean where if true = descending and false = ascending. Otherwise None is passed if not sorting by level)
                 "class_name": (class name given by input from the user. Otherwise None is passed if not sorting by class.)
+                "bookmarks": (Boolean where if true, the microservice uses a passed in array of spells instead of the list of all spells.)
+                "spell_list: (an array for the JSON objects of bookmarked spells to be passed. If bookmarks is false, it is passed as an empty list)
             }
 
 or
@@ -82,18 +84,27 @@ def handle_request(message, spell_data):
     sort_by = request_data["sort_by"]
     descending = request_data["descending"]
     class_name = request_data["class_name"]
+    bookmarks = request_data["bookmarks"]
+
+    if bookmarks == True:
+        # If bookmards is true, use the subset of spells provided in the request
+        spell_list = request_data.get("spell_list", [])
+    else:
+        # Otherwise use all spells 
+        spell_list = spell_data
+    
 
     # Sort spells by name
     if sort_by == "name":
-        return json.dumps(sort_by_name(spell_data), indent=4)
+        return json.dumps(sort_by_name(spell_list), indent=4)
     
     # Sort spells by level
     elif sort_by == "level":
-        return json.dumps(sort_by_level(spell_data, descending), indent=4)
+        return json.dumps(sort_by_level(spell_list, descending), indent=4)
 
     # Sort spells by class
     elif sort_by == "class":
-        return json.dumps(sort_by_class(spell_data, class_name), indent=4)
+        return json.dumps(sort_by_class(spell_list, class_name), indent=4)
     
     # Otherwise return an error message
     else:
@@ -131,4 +142,5 @@ def main():
         # Send the processed respnse back to main program
         socket.send_string(response)
 
-main()
+if __name__ == "__main__":
+    main()

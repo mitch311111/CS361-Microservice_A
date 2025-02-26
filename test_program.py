@@ -1,4 +1,5 @@
 import zmq
+import requests
 import json
 
 # Print all spell data
@@ -76,11 +77,37 @@ def main():
 
     while True:
         choice = get_input()
+
+        if choice == 4:
+            # Create termination message
+            message = json.dumps({"end_program": True})
+            print("Sending signal to microservice to end program")
+
+            # Send message to microservice
+            socket.send_string(message)
+
+            # Recieve message and print confirmation from the microservice
+            print(f"{socket.recv_string()}") 
+            print("Bye!")
+            break
+
+        # ask user if they would like to sort their bookmarked spells
+        use_bookmarks = int(input("Would you like to sort bookmarked spells? 1 or 2: ")) # 1 is yes and 2 is no
+        spell_list = []
+        if use_bookmarks == 1:
+            spell_list = bookmarked_spells(sample_spells) # grab bookmarked spells
+            bookmarks = True
+        else:
+            bookmarks = False
+
+
         if choice == 1:
             message = json.dumps({
                 "sort_by": "name",
                 "descending": None,
-                "class_name": None
+                "class_name": None,
+                "bookmarks": bookmarks,
+                "spell_list": spell_list
             })
             print(f"\nSending message: {message}\n")
             socket.send_string(message) # Send request to microservice
@@ -105,7 +132,9 @@ def main():
             message = json.dumps({
                 "sort_by": "level",
                 "descending": order,
-                "class_name": None
+                "class_name": None,
+                "bookmarks": use_bookmarks,
+                "spell_list": spell_list
             })
             print(f"\nSending message: {message}\n")
             socket.send_string(message) # Send request to microservice
@@ -127,7 +156,9 @@ def main():
             message = json.dumps({
                 "sort_by": "class",
                 "descending": None,
-                "class_name": get_class_name()
+                "class_name": get_class_name(),
+                "bookmarks": use_bookmarks,
+                "spell_list": spell_list
             })
 
             print(f"\nSending message: {message}\n")
@@ -150,21 +181,26 @@ def main():
             except json.JSONDecodeError:
                 print("Error: could not decode server response")
 
-        elif choice == 4:
-            # Create termination message
-            message = json.dumps({"end_program": True})
-            print("Sending signal to microservice to end program")
-
-            # Send message to microservice
-            socket.send_string(message)
-
-            # Recieve message and print confirmation from the microservice
-            print(f"{socket.recv_string()}") 
-            print("Bye!")
-            break
-
         else:
             print("Invalid Input. Try again.")
-    
 
-main()
+# Function to grab a sample list of spells for testing purposes
+def bookmarked_spells(sample_spells):
+    base_url = "https://www.dnd5eapi.co/api/2014/spells/"
+    spells = []
+
+    for spell in sample_spells:
+        url = base_url + spell
+        response = requests.get(url)
+        if response.status_code == 200:
+            spells.append(response.json()) 
+        else:
+            print(f"Error: Could not fetch spell {spell} (Status Code {response.status_code})")
+    
+    return spells
+        
+#sample bookmarked spells
+sample_spells = ["fear", "animate-dead", "guiding-bolt", "eyebite"]
+
+if __name__ == "__main__":
+    main()
