@@ -110,7 +110,7 @@ def handle_request(message, spell_data):
     else:
         return "invalid choice"
     
-
+ 
 
 def main():
     # Create ZMQ context and socket

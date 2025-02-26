@@ -90,7 +90,7 @@ def main():
             print(f"{socket.recv_string()}") 
             print("Bye!")
             break
-
+ 
         # ask user if they would like to sort their bookmarked spells
         use_bookmarks = int(input("Would you like to sort bookmarked spells? 1 or 2: ")) # 1 is yes and 2 is no
         spell_list = []
